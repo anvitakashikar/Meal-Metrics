@@ -134,12 +134,38 @@ def main():
         return
     create_output_dir()
 
-    # Download all categories
+    # Download all categories with pagination
     all_foods = []
     for category in FOOD_CATEGORIES:
-        foods = download_foods_by_category(category)
-        all_foods.extend(foods)
-        time.sleep(0.5)  # Avoid rate limiting
+        print(f"\n📥 Downloading: {category}")
+
+        # Download 3 pages per category = up to 600 items per category
+        for page in range(1, 4):
+            url = f"{BASE_URL}/foods/search"
+            params = {
+                "api_key": API_KEY,
+                "query": category,
+                "dataType": "Foundation,SR Legacy",
+                "pageSize": 200,
+                "pageNumber": page
+            }
+
+            try:
+                response = requests.get(url, params=params)
+                response.raise_for_status()
+                data = response.json()
+                foods = data.get("foods", [])
+
+                if not foods:
+                    break
+
+                all_foods.extend(foods)
+                print(f"   Page {page}: {len(foods)} foods")
+                time.sleep(0.3)
+
+            except requests.exceptions.RequestException as e:
+                print(f"   ❌ Error on page {page}: {e}")
+                break
 
     # Save data
     save_data(all_foods)
