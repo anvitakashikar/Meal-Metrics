@@ -1,0 +1,16 @@
+numpy
+pandas
+scikit-learn
+tensorflow
+torch
+torchvision
+transformers
+pillow
+matplotlib
+seaborn
+jupyter
+requests
+kaggle
+python-dotenv
+tqdm
+opencv-python
